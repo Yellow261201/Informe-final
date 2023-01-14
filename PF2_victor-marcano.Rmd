@@ -1,0 +1,375 @@
+---
+title: "Nueva York contra la contaminación del aire por nuestra salud"
+author: "Victor Marcano, José Gonzalez, Omar Cartaya y Valeria Rinaldi"
+date: "2023-01-03"
+output: 
+ 
+    html_document:
+      
+      toc: true
+      
+      toc_depth: 5
+      
+      toc_float:
+        
+        collapsed: true
+        
+        smooth_scroll: true
+        
+        code_folding: hide
+        
+        ioslides_presentation: default
+        
+        mainfont: Times New Roman
+---
+```{r, warning = FALSE, echo = FALSE}
+
+library(readxl)
+library(tidyverse)
+library(ggrepel)
+library(dslabs)
+library(stringr)
+library(zoo)
+library(lubridate)
+library(rvest)
+library(tidyr)
+library(gridExtra)
+
+```
+# Introducción
+
+La humanidad ha logrado extender la calidad de vida gracias al desarrollo de las herramientas médicas efectivas contra las bacterias y virus causantes de las enfermedades, es por ello que descubrimientos como la vacunas o los antibióticos, han permitido salvar millones de vidas a lo largo del mundo, logrando que eventos pandémicos como la viruela (56 millones de muertos) o la gripe española (40 – 50 millones de muertos) se repitan con menor frecuencia y con una menor cantidad de víctimas.Sin embargo, en la actualidad aún existen grandes retos para evitar muertes prematuras derivadas de enfermedades o agentes externos, este es el caso de la contaminación ambiental, que empezó a ser tratado como un tema esencial en la salud pública, con la proliferación de la fumigación aérea para los cultivos, generando graves problemas para la salud de las personas expuestas durante largos periodos de tiempo, siendo tratado abiertamente en la conferencia de Milán de 1957 sobre aspectos de salud pública en Europa.
+
+Posteriormente la Organización Panamericana de la Salud (OPS) en 1965 seguiría los pasos de la conferencia de Milán, al recomendar la creación de programas que den seguimiento a los niveles de contaminación en el aire dentro de la región, materializándose en 1967 con el establecimiento de estaciones de muestreo. En la actualidad, estos programas que miden la concentración en el ambiente de diferentes partículas contaminantes, han proliferado a lo largo del mundo, tanto que, en algunos países presentan situaciones particulares por estado y hasta por municipio.
+
+Es tal la preocupación que el 7.º Objetivo de Desarrollo Sustentable (ODS) establece la meta de conseguir “energía asequible y no contaminable” esto se debe a las emisiones de diversos gases producidos por fuentes de energía tradicionales, que al tener un contacto prolongado con el ser humano, causa un deterioro silencioso, sobre los órganos de las personas hasta su repentino fallo en especial en edades avanzadas, según la Organización Panamericana de la Salud (OPS) en todo el mundo alrededor de “7 millones de muertes prematuras fueron atribuibles a la contaminación del aire ambiental en 2016” (párr. 3).  A su vez, esta tendencia se ha mantenido a lo largo del tiempo, en 2019 la tercera causa de muerte en todo el mundo fue la enfermedad pulmonar obstructiva crónica representando el 6% del total de muertes, es por ello que se hace necesario realizar estudios como el presente para determinar, la relación entre la contaminación ambiental y el aumento de las muertes relacionadas a enfermedades respiratorias.
+
+Ahora bien, las partículas que afectan a la salud y son objeto de los estudios ambientales, se divide según su tamaño en dos tipos “con un diámetro de 10 micras o menos, (≤ PM10) pueden penetrar y alojarse en los pulmones, las partículas que son todavía más dañinas para la salud son aquellas con un diámetro de 2,5 micras o menos, (≤ PM2.5)” (Organización Mundial de la Salud, p. 13). Para efectos del presente trabajo, sólo se utilizarán las partículas con un diámetro igual o menor a 2,5 micras; entre ellas se pueden encontrar el ozono y el dióxido de nitrógeno, los cuales estarán medidos en partes por millón. A su vez, se utilizarán la cantidad de muertes por problemas y/o afecciones cardiacas por cada 100.000 habitantes en el estado de Nueva York, dichas muertes son atribuidas a la conformación de los componentes que determinan  la calidad del aire , bien sea por su uso a nivel estatal o la cantidad presente de dicho componente en el aire. Habiendo establecido el trabajo, se procederá a describir brevemente los datos a utilizar.
+
+## Descripción de los datos a utilizar 
+
+**Ozono** Gas presente en la atmósfera, que en altas concentraciones puede provocar daños en la salud como irritar el sistema respiratorio, agravar el asma y las enfermedades pulmonares crónicas, reducir la función pulmonar, disminuir la esperanza de vida” (par. 3). De esta manera, su forma de medirse es en _"partes por millón"_ (lo cual significa la cantidad de unidades de una determinada sustancia que hay por cada millón de unidades del conjunto) y esta misma posee propiedades las cuales permiten absorber parte de la radiación ultravioleta, que puede estimar esta misma concentración en el ambiente en función de la atenuación de la misma, es decir por la cantidad que hay presente en el aire en promedio anual.  En presencia de altas cantidades es un peligro para la salud, debido a que puede irritar las vías respiratorias y causar consecuencias asmáticas. En contraposición, una baja presencia de la misma, genera un aumento en la exposición a los rayos ultravioleta, y con ello un aumentó en el riesgo de cáncer de piel. Debido a esta influencia socioeconómica a nivel mundial, el Ozono es uno de los componentes del aire relevantes para estudiar la influencia de la calidad del aire a nivel social.
+
+![](https://blogquimobasicos.files.wordpress.com/2020/04/efecto2.png?w=468&h=289.png)
+
+**Dióxido de nitrógeno**: Componente químico compuesto por nitrógeno y oxígeno, que en altas concentraciones puede “irritar los pulmones y disminuir la función pulmonar, así como disminuir la resistencia a infecciones respiratorias (...) aumento de la mucosidad de las vías altas respiratorias, lo que puede hacer aumentar las infecciones respiratorias” (párr. 4). De la misma manera que el Ozono, su concentración y medición es en _"partes por millón"_, permitiendo medir los niveles de contaminación entre muchas de las sustancias que emiten los vehículos a motor y su presencia en el aire en promedio anual. Ante aumentos del dióxido de nitrógeno, esto puede producir quemaduras, espasmos, edemas pulmonares, lesiones pulmonares graves e incluso la muerte. Por el contrario, ante situaciones de baja presencia en el aire de dióxido de nitrógeno, se pueden presentar irritaciones pulmonares, náuseas y tos. Por lo que, la alteración de este componente es relevante al momento de medir la calidad del aire y cómo este afecta a su población.
+
+![](https://www.semana.com/resizer/iv6ULQMfc4tZw0j9MU88vfWEli8=/arc-anglerfish-arc2-prod-semana/public/PPHUI44WFJAG5K2ZLRL6JKML5M.jpg)
+
+**Problemas cardiacos**: Dato referido a la cantidad de muertes por problemas cardíacos y/o problemas respiratorios atribuibles a los componentes que determinan la calidad del aire. Esta variable estará medida en un promedio anual por cada 100.000 habitantes de la ciudad Nueva York. De este modo, es pertinente resaltar que, las enfermedades cardíacas al ser la principal causa de muerte en Estados Unidos de acuerdo al Centro para el Control y Prevención de Enfermedades (CDC), esta variable estará dividida por los diferentes condados de Nueva York, sirviendo de este modo para analizar su variación tanto en los condados como a nivel estatal.
+
+![](https://isanidad.com/wp-content/uploads/2017/07/ecografia3d_riesgo_cardiovascular_portada_08072017_consalud-1.jpg)
+
+## Interrogantes
+
+Se buscará responder a las siguientes interrogantes:
+
+**1. ¿Cuál es el mínimo y el máximo de muertes ocasionadas por problemas respiratorios y afecciones cardiacas debido a la contaminación del aire?** 
+
+**2. ¿Cómo se ha comportado la concentración de las partículas de Dióxido de Nitrógeno y Ozono en el aire de New York durante el periodo 2007-2021?**
+
+**3. Usando una muestra de 5 distritos, ¿Cómo han evolucionado las muertes ocasionadas por problemas respiratorios y afecciones cardíacas debido a la contaminación del aire para el periodo 2005-2015?**
+
+**4. Analizar mediante un gráfico de líneas donde se localiza una mayor concentración de muertes por problemas cardíacos en la actualidad y comparar estos resultados con periodos anteriores.**
+
+**5. Establecer una línea de regresión o una posible tendencia futura del comportamiento entre el dióxido de nitrógeno y el ozono para Nueva York.**
+
+**6. Establecer una reflexión sobre a dónde se dirige la calidad del aire y cómo afecta a los residentes de Nueva York.**
+
+# Metodología
+
+Al realizar el trabajo de investigación, es de suma importancia no solo tener una buena base teórica, también es relevante para el proceso del marco metodológico en el cual se fundamente la investigación. Así, sobre lo previamente mencionado se describe lo siguiente: “La metodología de la investigación se refiere simplemente al como un investigador diseña sistemáticamente un estudio para garantizar resultados válidos y fiables que respondan a las metas y objetivos de la investigación.” (Ortega, s. f, párr. 4). En consecuencia, el objetivo es: 1. Identificar la relación que tienen los problemas respiratorios y las afecciones cardiacas con respecto a los componentes que inciden en la calidad del aire.  Mientras que, los objetivos específicos son: 1. analizar los efectos que tiene la calidad del aire sobre la mortalidad en los distritos de Queens, Bronx, Brooklyn, Manhattan y Staten Island, en el periodo comprendido entre 2007 y 2021, 2. Interpretar la incidencia del dióxido de nitrógeno y del ozono con respecto a la calidad del aire. Posteriormente a ello, se procesarán los datos mediante Rstudio usando todo lo visto en clase para depurar la información para que sea entendible en el apartado analítico y estadístico, centrándonos de esta forma al momento de depurar la data en quedarnos con el Dióxido de nitrógeno, el Ozono y los problemas cardíacos, usando filter, select, merge, pivot_longer/wider separate y summarise, eliminando los NA correspondientes. Por tanto, siendo manejable la información para llevar a cabo en la investigación.
+
+ Después de haber limpiado los datos, se realizarán una serie de gráficos mediante la librería **_ggplot_**, para obtener así las respuestas a las interrogantes planteadas en este documento.  En el caso de los gráficos, se utilizó herramientas como geom_point, geom_line, geom_bar y geom_smooth. De igual manera, se realizaron dos regresiones simples, tomando en ambos casos como variable deependiente (en términos econométricos Y) a los problemas cardíacos y como variables independientes (en términos econométricos X) al dióxido de nitrógeno y el ozono. Al mencionar la información anterior, también se anexa las muertes_media y calidad_aire.  Por otro lado, también se hace uso de elementos como mutate, además, también se usa como objeto de estudio los condados más importantes de la Ciudad de Nueva York, como lo son, _Queens, Bronx, Brooklyn, Manhattan y Staten Island_.  De hecho, a raíz de estos estudios se sacan grandes conclusiones más adelante en relación a la contaminación. 
+ 
+Con respecto a la metodología usada en la realización del markdown, se utilizo herramientas tales como “_negrita_” para remarcar palabras o “[]” y “()” para introducir las referencias y anexar los links consultados, respectivamente. Y, por último, al adjuntar las imágenes se hace uso de los signos de exclamación “!” y del “#” para designar encabezados. En consecuencia, las preguntas a responder son directamente atribuibles a los objetivos específicos y el  objetivo general. Además, las unidades que en realidad terminan por incidir en la calidad del aire, es decir, el dióxido de nitrógeno y el ozono, están ambas medidas en partes por millón.
+
+# Análisis
+
+Una vez establecida la metodología a realizar, se procedió a inspeccionar los datos por medio de la función  _summary()_ de R studio, para posteriormente realizar el procesamiento de los datos y llegar al análisis, con el cual poder responder a las preguntas planteadas en la propuesta del proyecto. Los resultados fueron los siguientes:
+
+```{r, warning = FALSE}
+datos_aire <- read_excel("Air_Quality.xlsx")
+
+summary(datos_aire)
+```
+
+
+Como se puede observar, existen una gran cantidad de indicadores en la base de datos inicial, por lo que se requirió modificar la tabla de datos, para que los indicadores resultantes solo sean las fechas, la localización, el promedio obtenido de muertes por problemas cardiacos y/o afecciones cardíacas, el promedio de la cantidad de dióxido de nitrógeno (NO2) y el promedio de la cantidad de Ozono (02) en los diferentes condados de Nueva York (estos dos últimos medidos en partes por millón). Las herramientas utilizadas para este procesamiento fueron las funciones: _Filter, pivot_wider, summarise, group_by, select y separate_. Una vez realizado el procesamiento y modificación de los datos, se procedió mediante la función _transform_ a establecer a cada variable su tipo de dato correspondiente, es decir, que los datos numéricos sean tomados como tales, que las localizaciones sean tratados como caracteres, entre otros para posteriormente usando la función _summary_ realizar una vista previa de los datos.
+
+
+```{r, warning = FALSE}
+
+problemas_cardiacos <- read_excel("bases_datos_limpias.xlsx", sheet ="problemas_cardiacos")
+
+calidad_aire <- read_excel("bases_datos_limpias.xlsx", sheet = "calidad_aire")
+
+grafico <- read_excel("bases_datos_limpias.xlsx", sheet = "grafico")
+
+calidad_aire <- transform(calidad_aire, nitrogeno_media = as.numeric(nitrogeno_media), 
+                     
+         localizacion = as.character(localizacion), 
+                     
+          ozono_media = as.numeric(ozono_media))
+
+grafico <- transform(grafico, nitrogeno_media = as.numeric(nitrogeno_media), 
+                     
+         localizacion = as.character(localizacion), 
+                     
+          ozono_media = as.numeric(ozono_media))
+  
+problemas_cardiacos <-  transform(problemas_cardiacos,  localizacion = as.character(localizacion), 
+                     
+          muertes_media = as.numeric(muertes_media))
+
+resultado <- left_join(calidad_aire, problemas_cardiacos)
+
+
+summary(resultado)
+
+```
+
+
+Como se puede observar, al haber condados que no recopilan información sobre ciertos datos, se puede observar mínimos de 0 en cuanto al promedio del dióxido de nitrógeno y el ozono se refiere. Dejando esto de lado, un dato relevante es que el promedio de muertes por problemas cardíacos y/o afecciones cardíacas mostró un mínimo de 2,4 muertes, un máximo de 11,7 y un promedio general de 4,974 muertes para todo el estado de New York. Cabe acotar que, el resultado de NAs en el indicador de _muertes_media_ se debe a que al unir los problemas cardiacos con los indicadores de calidad del aire, existen ciertos distritos que no miden alguna de las variables anteriores o no bajo la misma periodicidad, por lo que se obviará esto para el análisis. Una vez realizada una vista preliminar de los datos, se procederá a plantear una línea de tiempo de los tres indicadores respectivos con el objetivo de averiguar una posible tendencia de los mismos.
+
+
+## Gráfico n°1
+
+Cabe resaltar que, para el estudio del Ozono y el Dióxido de nitrógeno, se usará al este de Nueva York y Starrett City por ser de los sectores más relevantes de la Ciudad de Nueva York, debido su alto componente turístico.  Ya aclarado lo anterior, se realizará el gráfico utilizando un filtro que se fije a la localización ya implementada en **”gráfico”** mediante las herramientas de Rstudio usando ggplot2 de la siguiente forma:
+
+```{r, warning = FALSE}
+grafico %>%
+   
+  ggplot(aes(year,nitrogeno_media, group = 1)) + 
+                          
+  geom_point(aes(year, nitrogeno_media), color = "deepskyblue4", size = 3) +
+  
+  geom_line(color = "deepskyblue2") +
+  
+  scale_x_continuous(n.breaks = 10) +
+  
+  xlab("Años") +
+  
+  ylab("nitrogeno_media") +
+   
+   labs(title="Línea de tiempo del Dióxido de nitrógeno", x="Años", y = "Dióxido de nitrógeno") +
+  theme(plot.title = element_text(size = 15, face = "bold"),
+        legend.position="none",
+        axis.title.x = element_text(size = 10, face = "bold"),
+         axis.title.y = element_text(size = 10, face = "bold")) +
+ 
+  geom_vline(xintercept = 2019, linetype = "dashed", color = "red", size = 1) +
+   
+   geom_label(aes(x = 2019, y = 15, label ="inicio de pandemia"),
+              size = 3, color = "black", family = "Times New Roman") 
+ 
+```
+Como se puede observar en la línea de tiempo, el uso del dióxido de nitrógeno se fue reduciendo paulatinamente con el paso del tiempo, esto posiblemente tenga que ver con la concientización de los problemas ambientales y la agenda 2030 de las Naciones Unidas. En este sentido, cabe destacar que la caída más drástica de los últimos años, fue precisamente durante el inicio de la pandemia en 2020, teniendo esto total sentido en dicho contexto, en la Ciudad de Nueva York en el que se paralizó el consumo y el movimiento de la economía, por lo tanto, la demanda de productos que en su elaboración o en su uso, produzcan dióxido de nitrógeno se vio disminuida en New York. 
+
+## Gráfico n°2 
+
+El descenso en las últimas décadas en los condados de New York del dióxido de nitrógeno se ha acelerado, mostrando así un menor riesgo de contaminación para los habitantes de dichos condados. Sin embargo, con respecto al ozono aunque también se notó un retroceso, este tiene una pendiente mucho menos inclinada, de hecho se podría incluso pensar que se encuentra entre unas bandas su movimiento a lo largo del tiempo como lo refleja en el siguiente gráfico:
+
+```{r, warning = FALSE, echo = TRUE}
+
+grafico  %>% 
+  
+  ggplot(aes(year , ozono_media)) +
+  
+  geom_point(aes( year, ozono_media), color = "green4", size = 3) +
+   
+   geom_line(color = "green2") +
+  
+  ylim(10,20) +
+  
+  scale_x_continuous(n.breaks = 10) +
+   
+   labs(title="Línea de tiempo del Ozono", x="Años", y = "Ozono") +
+   
+   geom_vline(xintercept = 2019, linetype = "dashed", color = "red", size = 1) +
+   
+   geom_label(aes(x = 2019, y = 13, label ="inicio de pandemia"),
+              size = 3, color = "black", family = "Times New Roman") +
+  
+  xlab("Años") +
+  
+  ylab("Ozono") 
+```
+
+En la línea de tiempo en el año 2016, se puede observar un salto temporal, debido a la ausencia de datos por parte de la fuente de referencia _"data.cityofnewyork"_ en dicha fecha. Por otra parte, se puede observar que el Ozono ha mantenido una media general a lo largo del tiempo, reduciéndose esta misma en los últimos periodos. Esta observación va a la par con los resultados vistos en la línea de tiempo del dióxido de nitrógeno, donde el Ozono en el aire, medido en partes por millón, se habría reducido de forma inelástica con respecto al cambio en la demanda ocasionada por el impacto en el consumo en los inicios de la pandemia. Este consumo del Ozono, al igual que el consumo del dióxido de nitrógeno, se revió reducido por la parálisis pandémica, lo cual ocasionó una disminución del tráfico, ahorro de energía y disminución de los medios de transporte más contaminantes como lo son el transporte particular. 
+
+## Gráfico n°3 
+
+Ahora bien, una vez analizada las dos líneas de tiempo tanto del dióxido de nitrógeno como del ozono, se puede esperar que ante una mejora de estos indicadores como se presentó entre el periodo 2005 y 2020, es decir una disminución de los componentes que alteran negativamente a la calidad del aire como lo son el dióxido de nitrógeno y el Ozono, exista una reducción de las enfermedades y muertes por problemas respiratorios y afecciones cardiacas en promedio. Para comprobar esta situación, se desarrolló un gráfico comparativo entre los condados más relevantes de Nueva York, los cuales son: _Queens, Bronx, Brooklyn, Manhattan, Staten Island y Este de New York_. Estos mismos servirán para identificar cuántas muertes por problemas cardiacos y/o afecciones cardiacas en promedio por cada 100.000 habitantes se presentan en dichos condados, obteniéndose los siguientes resultados:
+
+```{r, warning = FALSE, echo = TRUE}
+
+years<- c(2005, 2009, 2012, 2015)
+years<- as.factor(years)
+
+
+
+distrito<- c("Queens",
+            "Bronx",
+            "Brooklyn",
+            "Manhattan",
+            "Staten Island",
+            "East New York")
+
+
+resultado %>% 
+  
+  filter(year %in% years  & localizacion %in% distrito ) %>% 
+  
+  ggplot(aes(year, muertes_media, group = localizacion)) + 
+  
+    geom_line(aes(color= localizacion)) +
+  
+  scale_x_continuous(n.breaks = 10) +
+  
+   theme(plot.title = element_text(size = 17, face = "bold"),
+        legend.position="bottom",
+        axis.title.x = element_text(size = 13, face = "bold"),
+        axis.title.y = element_text(size = 13, face = "bold")) +
+  
+  labs(title="Línea de tiempo de distritos relevantes", x ="Años", y = "afecciones y problemas cardiacos") +
+  
+  geom_point(aes(color = localizacion))
+
+```
+
+En este orden ideas, los condados de Bronx y Manhattan vendrían a tener de media la cantidad de muertes más baja de la ciudad, mientras que por otro lado, Staten Island y Brooklyn son las que poseen de media la mayor cantidad de muertes para finales de 2015. Si bien es cierto que en el periodo de análisis de los problemas cardíacos, a partir de 2015, se ha dejado de recolectar información, se puede observar que en los principales condados, se ha presentado una reducción de este promedio, a excepción de Bronx y Queens que en estos casos aumentó el promedio de muertes por problemas cardiacos y/o afecciones respiratorias atribuibles a los componentes que determinan la calidad del aire. Esta relación sólo se rompe, en los últimos gráficos donde Manhattan posee una menor cantidad de muertes de media, en vez de ser el Este de Nueva York, todo esto seguido de Bronx y de Brooklyn, los cuales tendrían la mayor cantidad de muertes. Pudiendo observar que, en los principales distritos de Nueva York, se ha presentado una disminución en el promedio de muertes por problemas cardiacos y/o afecciones cardiacas atribuibles a los componentes de la calidad del aire medido por cada 100.000 habitantes. 
+
+
+## Gráfico n°4, 5 y 6
+
+Habiendo estudiado el comportamiento del promedio de muertes por problemas cardiacos y/o afecciones cardiacas de los principales condados de Nueva York, se estudiará el comportamiento de los condados con mayor promedio de muertes y los que tienen un menor promedio de muertes, de la siguiente manera:
+
+```{r, warning = FALSE}
+
+resultado %>% 
+  
+  filter(year > 2004 & muertes_media > 5) %>%
+  
+  ggplot(aes(as.factor(year), muertes_media, group = localizacion)) + 
+  
+  geom_point(aes(color = localizacion)) +
+  
+  geom_line(aes(color = localizacion)) +
+  
+  labs(title="Comparación de los distritos con mayor muerte promedio", x="Años", y = "Afecciones y  problemas cardiacos") +
+  
+  facet_wrap('localizacion') +
+  theme(legend.position = 'none')
+  
+```
+```{r, warning = FALSE}
+resultado %>% 
+  
+  filter(year > 2004 & muertes_media < 5) %>%
+  
+  ggplot(aes(as.factor(year), muertes_media, group = localizacion)) + 
+  
+  geom_point(aes(color = localizacion)) +
+  
+  geom_line(aes(color = localizacion)) +
+  
+  labs(title="Comparación de los distritos con menor muerte promedio", x = "Años", y = "Afecciones y  problemas cardiacos") +
+  facet_wrap('localizacion') + 
+  
+  theme(legend.position = 'none', axis.text.x = element_text(size = 8, angle = 45))
+
+
+```
+
+En los gráficos 4 y 5, se dividen los condados en dos grupos; el primero con el más alto promedio de muertes por año, y el segundo con menor promedio, tomando como hipótesis que todo condado que supere en promedio las 5 muertes anuales será considerado del primer grupo, siendo éste el menos numeroso. Se puede observar a nivel de ciertos condados que, se ha presentado una tendencia desde 2005 hasta 2015 a la reducción del promedio de muertes por problemas cardíacos e incluso, en algunos se ha logrado reducir el promedio al punto de pertenecer al grupo de condados con menor incidencia, como es el caso de Borough. Asimismo, esto se puede mostrar mediante el siguiente gráfico de barras entre todos los condados, comparándolos en 2005 y 2015 para comprobar si efectivamente se ha producido una reducción desde el inicio del periodo de estudio de los problemas respiratorios. Obteniéndose de esta forma los siguientes resultados:
+
+```{r, warning = FALSE}
+ p3 <- problemas_cardiacos %>% 
+  filter(year == 2005 & muertes_media) %>%
+  mutate(localizacion = reorder(localizacion, muertes_media, FUN = median)) %>%
+  ggplot(aes(localizacion, muertes_media)) +
+  geom_bar(stat ="identity", color= "white", fill="Green4",   na.rm = TRUE, show.legend = none) +
+  coord_flip() +
+  labs(y ="Problemas car(2005)", x ="Localización") +
+  theme(legend.position = 'none', axis.text.x = element_text(size = 8)) +
+  theme(axis.title.x = element_text(face="bold", vjust=1.5, colour="black", size=rel(0.80)))
+
+
+p4 <- problemas_cardiacos %>% 
+  filter(year == 2015 & muertes_media) %>%
+  mutate(localizacion = reorder(localizacion, muertes_media, FUN = median)) %>%
+  ggplot(aes(localizacion, muertes_media)) +
+  geom_bar(aes(localizacion, muertes_media),
+           stat ="identity",color= "white", fill="Red4", na.rm = TRUE, show.legend = none) +
+  labs(y ="Problemas car(2015)", x ="Localización") +
+  coord_flip() +
+  theme(legend.position = 'none', axis.text.x = element_text(size = 8)) +
+  theme(axis.title.x = element_text(face="bold", vjust=1.5, colour="black", size=rel(0.80)))
+
+grid.arrange(p3, p4, ncol = 2)
+
+
+``` 
+
+Al igual que a lo obtenido en la línea de tiempo comparativa de los principales condados de Nueva York  a nivel general, se ha presentado una disminución en el promedio de las muertes por problemas cardíacos y/o afecciones cardiacas desde 2005 hasta 2015. Pudiendo decir, con observar el gráfico, que ciertamente ha sido efectivo los procedimientos de la OMS de reducir este problemas en Estados Unidos. Ahora bien, se estudió además mediante una línea de regresión por medio de mínimos cuadrados ordinarios del programa R studio si existe una correlación entre el Ozono promedio, el dióxido de nitrógeno promedio y el promedio de muertes por problemas cardiacos y/o afecciones cardiacas.
+
+
+
+## Gráfico n°7 
+
+De este modo, será necesario establecer una línea de regresión entre los componentes que miden la calidad del aire con las muertes debido a problemas cardíacos y/o afecciones cardíacas. Presentándose de la siguiente manera:
+
+```{r, warning = FALSE}
+
+resultado %>%
+  ggplot(aes(nitrogeno_media, muertes_media)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth( formula = y~x,
+               method = "lm",
+               color = "red") +
+  xlim(10,55) +
+   labs(y ="Afecciones y problemas cardiacos", x ="Dióxido de nitrógeno")
+```
+
+De acuerdo al gráfico de regresión, ante menores niveles de partes por millón promedio de dióxido de nitrógeno en el aire, habrá una mayor cantidad de promedio de muertes debido a problemas cardíacos y/o afecciones cardíacas. Si bien es cierto que esto puede parecer contra intuitivo, ya que a mayores niveles de óxidos y dióxidos de nitrógeno pueden producir quemaduras, espasmos y reducir la oxigenación de los tejidos y líquidos acumulados en los pulmones, la ausencia de dióxidos y óxidos de nitrógeno en el aire pueden irritar los ojos, la nariz, la garganta, causando tos y náuseas, las cuales pueden a su vez también causar la muerte. De esta manera, se explica que ante bajos niveles de dióxido de nitrógeno en el aire, se puede observar un aumento en los fallecimientos, debiéndose esto a la suficiente limpieza del aire sin la regulación de otros indicadores relevantes como el dióxido de carbono y los instrumentos a nivel regional que utilizan  el dióxido de nitrógeno. A su vez, sería pertinente para futuros trabajos ampliar dicho modelo con más variables independientes, con el objetivo de evaluar con mayor profundidad,  como los componentes del aire que inciden en la calidad del aire afectan a las muertes por problemas cardiacos y/o afecciones respiratorias, ya que este gráfico regresivo está determinado por solo una variable independiente.
+
+## Gráfico n°8
+
+Para comprobar el anterior resultado, se procederá ahora a realizar una regresión donde el ozono medido en partes por millón será la variable independiente y el promedio de muertes por problemas cardíacos anuales serán la variable dependiente. Presentándose el resultado de la siguiente manera:
+
+```{r, warning = FALSE}
+resultado %>%
+  ggplot(aes(ozono_media, muertes_media)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth( formula = y~x,
+               method = "lm",
+               color = "red") +
+  xlim(5, 25) +
+   labs(y ="Afecciones y problemas cardiacos", x ="Ozono")
+
+```
+
+Este resultado demuestra que, debido a aumentos en el ozono, se presenta un aumento en el promedio de muertes por problemas cardíacos y afecciones cardíacas anuales en la Ciudad de Nueva York. Esto tiene lógica debido a que el aumento del ozono troposférico genera deterioro pulmonar e incluso la destrucción de la vegetación y biodiversidad. En este sentido, se puede observar una clara dispersión entre los datos debido a la gran diferencia de cantidad de ozono medido en partes por millón presentes en los diferentes distritos, esto debido a que el ozono se encuentra en contaminantes llamados “precursores”, producidos por el tráfico, las industrias y la calefacción. Cabe resaltar que, este gráfico regresivo está solamente en base a dos variables, una independiente y otra dependiente, por lo que este modelo debe ser ampliado a los demás componentes que intervienen al momento de valorar la calidad del aire  en conjunto, para ser más precisos al momento de interpretar esta relación entre el Ozono y la muerte por problemas cardiacos.
+
+
+# Conclusiones
+
+A nivel general los condados de New York han presentado una disminución en el promedio de muertes por afecciones cardiacas, así como se puede observar una disminución en la concentración que tienen los gases estudiados en el ambiente. Por lo tanto, se podría intuir que existe una incidencia de los gases contaminante hacia las afecciones cardiacas. Sin embargo, se debe recalcar que como no se realizaron pruebas de significancia estadísticas, no nos encontramos en capacidad de afirmar a ciencia cierta el nivel de dicho efecto. 
+
+Otro punto a tomar en cuenta, a nivel de estudio, es que se tuvieron unos condados donde la información pertinente y necesario no fue recopilada por lo tanto el estudio de tuvo que minimizar a 10 años, del 2005 hasta el 2015.
+	Un dato curioso que se nos presentó en la investigación, es que el dióxido de nitrógeno es un gas que puede llegar a tener una relación tanto directa como indirecta con las afecciones cardiacas, dado que si este es muy elevado es probable que las afecciones aumenten, pero, si es bajo también. 
+	
+Para finalizar, nos encontramos en capacidad de afirma que la contaminación varía dependiendo de la zona y la densidad de población; un ejemplo de esto puede ser Statement Island, donde se evidenciaron la mayor cantidad de muertes por afecciones cardiacas, en promedio, pero no es la zona de New York con mayor densidad de población, pero, si es una zona turística donde los ferris y la contaminación proveniente de las regiones cercanas afectan a la calidad del aire de este pequeño condado.
+	
+	
+# Referencias
+
+[OMS. (s.f.). OMS. Obtenido de https://www.who.int/es/news-room/spotlight/how-air-pollution-is-destroying-our-health#:~:text=Pueden%20aumentar%20el%20riesgo%20de,inflamaci%C3%B3n%20pulmonar%20e%20insuficiencia%20pulmonar](https://www.who.int/es/news-room/spotlight/how-air-pollution-is-destroying-our-health#:~:text=Pueden%20aumentar%20el%20riesgo%20de,inflamaci%C3%B3n%20pulmonar%20e%20insuficiencia%20pulmonar)
+
+[OPS. (s. f.). paho. Obtenido de https://www.paho.org/es/temas/calidad-aire](https://www.paho.org/es/temas/calidad-aire)
+
+[Ortega, C. (s. f). QuestionPro. Obtenido de https://www.questionpro.com/blog/es/metodologia-de-la-investigacion/](https://www.questionpro.com/blog/es/metodologia-de-la-investigacion/)
+
+
+
